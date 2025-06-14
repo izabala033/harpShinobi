@@ -140,7 +140,10 @@ function Circle() {
             <React.Fragment key={note}>
               {/* Outer note circle */}
               <div
-                onClick={() => setSelectedRoot(note)}
+                onClick={() => {
+                  setSelectedRoot(note);
+                  setSelectedMode(0);
+                }}
                 className={`absolute cursor-pointer rounded-full w-14 h-14 flex items-center justify-center font-semibold text-lg transition-colors duration-300 ${colorClass} ${borderClass}`}
                 style={{ left: x - 28, top: y - 28 }}
                 title={`Select root: ${note}`}
