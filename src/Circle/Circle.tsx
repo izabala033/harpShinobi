@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import * as tonal from "tonal";
 
-const radius = 150; // outer circle radius in px
+const radius = 160; // outer circle radius in px
 const center = 180; // center x/y in px
 const circleSize = center * 2;
 
