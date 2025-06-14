@@ -84,7 +84,7 @@ function Circle() {
   // Prioritize triad roots (if note is triad root), then chord tones in other triads
   const noteColors = useMemo(() => {
     const map: Record<string, string> = {};
-    const normalizeNote = (n: string) => tonal.Note.enharmonic(n).toLowerCase();
+    const normalizeNote = (n: string) => tonal.Note.chroma(n);
 
     circleOfFifths.forEach((note) => {
       map[normalizeNote(note)] = "none";
@@ -125,13 +125,11 @@ function Circle() {
           // Color class based on triad chord quality map
           const colorClass =
             chordQualityColors[
-              getChordQuality(
-                noteColors[tonal.Note.enharmonic(note).toLowerCase()] // use enharmonic + toLowerCase here
-              ) || "none"
+              getChordQuality(noteColors[tonal.Note.chroma(note)]) || "none"
             ];
 
           const isParentMajor =
-            tonal.Note.enharmonic(note) === tonal.Note.enharmonic(parentMajor);
+            tonal.Note.chroma(note) === tonal.Note.chroma(parentMajor);
 
           const borderClass = isParentMajor ? "border-4 border-yellow-400" : "";
 
@@ -150,8 +148,7 @@ function Circle() {
               {/* Inner degree label positioned between center and outer note */}
               {(() => {
                 const degreeIndex = scale.findIndex(
-                  (n) =>
-                    tonal.Note.enharmonic(n) === tonal.Note.enharmonic(note)
+                  (n) => tonal.Note.chroma(n) === tonal.Note.chroma(note)
                 );
                 if (degreeIndex === -1) return null;
 
