@@ -48,14 +48,11 @@ function Circle() {
   const [selectedMode, setSelectedMode] = useState(0); // Ionian = mode 0
 
   // Get scale notes for selected root & mode
-  const scaleName = `${selectedRoot} ${modeNames[selectedMode]}`;
+  const modeName = modeNames[selectedMode];
+  const scaleName = `${selectedRoot} ${modeName}`;
   const scale = tonal.Scale.get(scaleName).notes;
   const tonic = tonal.Scale.get(scaleName).tonic!;
-  const parentMajor = tonal.Mode.relativeTonic(
-    modeNames[selectedMode],
-    "ionian",
-    tonic
-  );
+  const parentMajor = tonal.Mode.relativeTonic(modeName, "ionian", tonic);
 
   // Helper to get triad for a scale degree:
   // Triad built stacking 3rds: root + 3rd + 5th within the scale notes (wrap around)
