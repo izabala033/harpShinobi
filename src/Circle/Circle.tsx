@@ -60,8 +60,13 @@ function Circle() {
           const isSelected = note === selectedRoot;
 
           const majorScale = tonal.Scale.get(`${selectedRoot} major`).notes;
-          const degreeIndex = majorScale.indexOf(note);
+          const degreeIndex = majorScale.findIndex(
+            (n) => tonal.Note.enharmonic(n) === tonal.Note.enharmonic(note)
+          );
 
+          console.log(
+            `Note: ${note}, Degree Index: ${degreeIndex}, Selected Root: ${selectedRoot}`
+          );
           // Base styles
           let colorClass = "bg-gray-800 hover:bg-green-600 text-white";
           let borderClass = "";
