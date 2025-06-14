@@ -10,8 +10,8 @@ const modesWithOrder = [
   { name: "Ionian", order: 1, label: "1st" },
   { name: "Mixolydian", order: 2, label: "2nd" },
   { name: "Dorian", order: 3, label: "3rd" },
-  { name: "Phrygian", order: 4, label: "4th" },
-  { name: "Aeolian", order: 5, label: "5th" },
+  { name: "Aeolian", order: 4, label: "4th" },
+  { name: "Phrygian", order: 5, label: "5th" },
   { name: "Locrian", order: 6, label: "6th" },
   { name: "Lydian", order: 12, label: "12th" },
 ];
