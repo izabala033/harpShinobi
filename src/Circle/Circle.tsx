@@ -53,24 +53,41 @@ function Circle() {
         style={{ width: circleSize, height: circleSize, marginBottom: 40 }}
       >
         {circleOfFifths.map((note, i) => {
-          const angle = i * angleStep - Math.PI / 2; // start at top
+          const angle = i * angleStep - Math.PI / 2;
           const x = center + radius * Math.cos(angle);
           const y = center + radius * Math.sin(angle);
 
-          // Is this note selected?
           const isSelected = note === selectedRoot;
+
+          const majorScale = tonal.Scale.get(`${selectedRoot} major`).notes;
+          const degreeIndex = majorScale.indexOf(note);
+
+          // Base styles
+          let colorClass = "bg-gray-800 hover:bg-green-600 text-white";
+          let borderClass = "";
+
+          if (degreeIndex === 0 || degreeIndex === 3 || degreeIndex === 4) {
+            colorClass = "bg-green-500 text-black"; // I, IV, V
+          } else if (
+            degreeIndex === 1 ||
+            degreeIndex === 2 ||
+            degreeIndex === 5
+          ) {
+            colorClass = "bg-blue-500 text-black"; // ii, iii, vi
+          } else if (degreeIndex === 6) {
+            colorClass = "bg-purple-500 text-black"; // vii°
+          }
+
+          if (isSelected) {
+            borderClass = "border-4 border-yellow-400";
+          }
 
           return (
             <div
               key={note}
               onClick={() => setSelectedRoot(note)}
-              className={`absolute cursor-pointer select-none rounded-full w-14 h-14 flex items-center justify-center font-semibold text-lg
-                ${
-                  isSelected
-                    ? "bg-green-500 text-black shadow-lg"
-                    : "bg-gray-800 hover:bg-green-600 transition-colors"
-                }`}
-              style={{ left: x - 28, top: y - 28 }} // offset half width/height to center
+              className={`absolute cursor-pointer rounded-full w-14 h-14 flex items-center justify-center font-semibold text-lg transition-colors duration-300 ${colorClass} ${borderClass}`}
+              style={{ left: x - 28, top: y - 28 }}
               title={`Select root: ${note}`}
             >
               {note}
