@@ -43,7 +43,6 @@ function Circle() {
     }
     return notes;
   }, []);
-  console.log("Circle of Fifths Notes:", circleOfFifths);
 
   const [selectedRoot, setSelectedRoot] = useState("C");
   const [selectedMode, setSelectedMode] = useState(0); // Ionian = mode 0
@@ -51,6 +50,12 @@ function Circle() {
   // Get scale notes for selected root & mode
   const scaleName = `${selectedRoot} ${modeNames[selectedMode]}`;
   const scale = tonal.Scale.get(scaleName).notes;
+  const tonic = tonal.Scale.get(scaleName).tonic!;
+  const parentMajor = tonal.Mode.relativeTonic(
+    modeNames[selectedMode],
+    "ionian",
+    tonic
+  );
 
   // Helper to get triad for a scale degree:
   // Triad built stacking 3rds: root + 3rd + 5th within the scale notes (wrap around)
@@ -72,7 +77,6 @@ function Circle() {
     }
     return triadsArray;
   }, [scale]);
-  console.log("Triads:", triads);
 
   // Helper to parse chord quality from triad string
   function getChordQuality(triad: string) {
@@ -135,8 +139,6 @@ function Circle() {
           const x = center + radius * Math.cos(angle);
           const y = center + radius * Math.sin(angle);
 
-          const isSelected = note === selectedRoot;
-
           // Color class based on triad chord quality map
           const colorClass =
             chordQualityColors[
@@ -145,7 +147,10 @@ function Circle() {
               ) || "none"
             ];
 
-          const borderClass = isSelected ? "border-4 border-yellow-400" : "";
+          const isParentMajor =
+            tonal.Note.enharmonic(note) === tonal.Note.enharmonic(parentMajor);
+
+          const borderClass = isParentMajor ? "border-4 border-yellow-400" : "";
 
           return (
             <React.Fragment key={note}>
