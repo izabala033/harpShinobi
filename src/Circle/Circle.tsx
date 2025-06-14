@@ -200,24 +200,6 @@ function Circle() {
             );
           })}
       </div>
-
-      {/* Display scale notes */}
-      <div className="mt-8 text-center max-w-xl">
-        <h2 className="text-xl mb-2">
-          {selectedRoot} {modeName} scale notes:
-        </h2>
-        <div className="flex flex-wrap justify-center gap-3 text-lg">
-          {scale.map((note) => (
-            <div
-              key={note}
-              className="bg-green-700 px-3 py-1 rounded shadow"
-              title={`Note: ${note}`}
-            >
-              {note}
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
