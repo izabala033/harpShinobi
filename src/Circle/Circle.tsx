@@ -5,15 +5,21 @@ const radius = 150; // outer circle radius in px
 const center = 180; // center x/y in px
 const circleSize = center * 2;
 
-const modeNames = [
-  "Ionian",
-  "Dorian",
-  "Phrygian",
-  "Lydian",
-  "Mixolydian",
-  "Aeolian",
-  "Locrian",
+// Define modes with their harmonic order and display position
+const modesWithOrder = [
+  { name: "Ionian", order: 1, label: "1st" },
+  { name: "Mixolydian", order: 2, label: "2nd" },
+  { name: "Dorian", order: 3, label: "3rd" },
+  { name: "Phrygian", order: 4, label: "4th" },
+  { name: "Aeolian", order: 5, label: "5th" },
+  { name: "Locrian", order: 6, label: "6th" },
+  { name: "Lydian", order: 12, label: "12th" },
 ];
+
+const modeNames = modesWithOrder.map((m) => m.name);
+
+// Sort by harmonic order ascending
+const sortedModes = modesWithOrder.sort((a, b) => a.order - b.order);
 
 // Labels you want for scale degrees 1-7, index matches degree index
 const degreeLabels = ["1", "2m", "3m", "4", "5", "6m", "7dim"];
@@ -125,23 +131,29 @@ function Circle() {
         })}
       </div>
 
-      {/* Mode selector */}
-      <div className="flex gap-3 overflow-x-auto max-w-full px-4">
-        {modeNames.map((modeName, i) => (
-          <div
-            key={modeName}
-            onClick={() => setSelectedMode(i)}
-            className={`cursor-pointer px-4 py-2 rounded font-semibold whitespace-nowrap
-              ${
-                selectedMode === i
-                  ? "bg-green-500 text-black shadow-lg"
-                  : "bg-gray-800 hover:bg-green-600 transition-colors"
-              }`}
-            title={`Select mode: ${modeName}`}
-          >
-            {modeName}
-          </div>
-        ))}
+      {/* Mode selector with harmonic order */}
+      <div className="flex gap-3 overflow-x-auto max-w-full px-4 mt-4">
+        {sortedModes.map(({ name, order, label }) => {
+          // Find index of mode in original modeNames array to match selectedMode
+          const modeIndex = modeNames.indexOf(name);
+          const isSelected = modeIndex === selectedMode;
+
+          return (
+            <div
+              key={name}
+              onClick={() => setSelectedMode(modeIndex)}
+              className={`cursor-pointer px-4 py-2 rounded font-semibold whitespace-nowrap
+          ${
+            isSelected
+              ? "bg-green-500 text-black shadow-lg"
+              : "bg-gray-800 hover:bg-green-600 transition-colors"
+          }`}
+              title={`Select mode: ${name}`}
+            >
+              {name} ({label})
+            </div>
+          );
+        })}
       </div>
 
       {/* Display scale notes */}
