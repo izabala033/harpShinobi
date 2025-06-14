@@ -77,40 +77,26 @@ function Circle() {
 
   // Helper to parse chord quality from triad string
   function getChordQuality(triad: string) {
-    if (triad.endsWith("dim")) return "diminished";
-    if (triad.endsWith("aug")) return "augmented";
-    if (triad.includes("7")) return "dominant";
-    if (triad.endsWith("m")) return "minor";
-    if (triad.endsWith("M")) return "major";
-    return undefined;
+    return tonal.Chord.get(triad).type.toLowerCase();
   }
 
   // Map each note in circleOfFifths to chord quality based on triads it belongs to
   // Prioritize triad roots (if note is triad root), then chord tones in other triads
   const noteColors = useMemo(() => {
-    // Create a map: note -> chord quality
-    // If a note belongs to multiple triads, root triad quality wins, else first found
     const map: Record<string, string> = {};
+    const normalizeNote = (n: string) => tonal.Note.enharmonic(n).toLowerCase();
 
-    // Lowercase and simplified notes for consistent matching
-    const simplifyNote = (n: string) => tonal.Note.simplify(n).toLowerCase();
-
-    // First assign 'none' to all circle notes
     circleOfFifths.forEach((note) => {
-      map[simplifyNote(note)] = "none";
+      map[normalizeNote(note)] = "none";
     });
 
     triads.forEach(({ root, notes, quality }) => {
-      const rootSimple = simplifyNote(root);
-      // Assign root note with triad quality (highest priority)
-      map[rootSimple] = quality;
-
-      // Assign other triad notes only if not already assigned root quality
+      const rootNorm = normalizeNote(root);
+      map[rootNorm] = quality;
       notes.forEach((note) => {
-        const nSimple = simplifyNote(note);
-        // Assign only if not root and current value is 'none'
-        if (nSimple !== rootSimple && map[nSimple] === "none") {
-          map[nSimple] = quality;
+        const noteNorm = normalizeNote(note);
+        if (noteNorm !== rootNorm && map[noteNorm] === "none") {
+          map[noteNorm] = quality;
         }
       });
     });
@@ -140,7 +126,7 @@ function Circle() {
           const colorClass =
             chordQualityColors[
               getChordQuality(
-                noteColors[tonal.Note.simplify(note).toLowerCase()]
+                noteColors[tonal.Note.enharmonic(note).toLowerCase()] // use enharmonic + toLowerCase here
               ) || "none"
             ];
 
