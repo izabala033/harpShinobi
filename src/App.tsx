@@ -18,7 +18,7 @@ function App() {
         <Route path="/circle" element={<Circle />} />
         <Route path="/harmonica" element={<Harmonica />} />
         <Route path="/settings" element={<Settings />} />
-        <Route path="/" element={<Navigate to="/harmonica" replace />} />
+        <Route path="/" element={<Navigate to="/circle" replace />} />
       </Routes>
     </Router>
   );
