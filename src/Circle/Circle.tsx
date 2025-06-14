@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import * as tonal from "tonal";
 
 const radius = 160; // outer circle radius in px
@@ -22,22 +22,19 @@ const modeNames = modesWithOrder.map((m) => m.name);
 const sortedModes = modesWithOrder.sort((a, b) => a.order - b.order);
 
 // Labels you want for scale degrees 1-7, index matches degree index
-const degreeLabels = ["1", "2m", "3m", "4", "5", "6m", "7dim"];
+const degreeLabels = ["1", "2", "3", "4", "5", "6", "7"];
 
-// Color classes matching degree type (same as your outer note colors)
-const degreeColors: Record<number, string> = {
-  0: "bg-green-500 text-black", // 1 (I)
-  3: "bg-green-500 text-black", // 4 (IV)
-  4: "bg-green-500 text-black", // 5 (V)
-  1: "bg-blue-500 text-black", // 2m (ii)
-  2: "bg-blue-500 text-black", // 3m (iii)
-  5: "bg-blue-500 text-black", // 6m (vi)
-  6: "bg-purple-500 text-black", // 7dim (vii°)
+// Color classes for chord triads
+const chordQualityColors: Record<string, string> = {
+  major: "bg-green-500 text-black", // major triads
+  minor: "bg-blue-500 text-black", // minor triads
+  diminished: "bg-purple-500 text-black", // diminished triads
+  none: "bg-gray-800 text-white hover:bg-green-600", // not in triad
 };
 
 function Circle() {
   // Build circle of fifths notes array in order (C, G, D, A, E, B, F#, C#, G#, D#, A#, F)
-  const circleOfFifths = (() => {
+  const circleOfFifths = useMemo(() => {
     const notes = [];
     let note = "C";
     for (let i = 0; i < 12; i++) {
@@ -45,7 +42,8 @@ function Circle() {
       note = tonal.Note.transpose(note, "5P");
     }
     return notes;
-  })();
+  }, []);
+  console.log("Circle of Fifths Notes:", circleOfFifths);
 
   const [selectedRoot, setSelectedRoot] = useState("C");
   const [selectedMode, setSelectedMode] = useState(0); // Ionian = mode 0
@@ -54,8 +52,70 @@ function Circle() {
   const scaleName = `${selectedRoot} ${modeNames[selectedMode]}`;
   const scale = tonal.Scale.get(scaleName).notes;
 
-  // Get major scale notes for color/degree matching
-  const majorScale = tonal.Scale.get(`${selectedRoot} major`).notes;
+  // Helper to get triad for a scale degree:
+  // Triad built stacking 3rds: root + 3rd + 5th within the scale notes (wrap around)
+  // Use tonal.Chord.detect on triad notes to get chord quality
+  const triads = useMemo(() => {
+    const triadsArray = [];
+    for (let i = 0; i < 7; i++) {
+      // Root note for triad = scale[i]
+      const root = scale[i];
+      // Third and fifth degrees within scale, wrapping around:
+      const third = scale[(i + 2) % 7];
+      const fifth = scale[(i + 4) % 7];
+      const triadNotes = [root, third, fifth];
+      // Detect chord quality with tonal.Chord.detect, fallback to 'none'
+      const qualities = tonal.Chord.detect(triadNotes);
+      // If multiple qualities, pick the first; if none, 'none'
+      const quality = qualities.length > 0 ? qualities[0] : "none";
+      triadsArray.push({ root, notes: triadNotes, quality });
+    }
+    return triadsArray;
+  }, [scale]);
+  console.log("Triads:", triads);
+
+  // Helper to parse chord quality from triad string
+  function getChordQuality(triad: string) {
+    if (triad.endsWith("dim")) return "diminished";
+    if (triad.endsWith("aug")) return "augmented";
+    if (triad.includes("7")) return "dominant";
+    if (triad.endsWith("m")) return "minor";
+    if (triad.endsWith("M")) return "major";
+    return undefined;
+  }
+
+  // Map each note in circleOfFifths to chord quality based on triads it belongs to
+  // Prioritize triad roots (if note is triad root), then chord tones in other triads
+  const noteColors = useMemo(() => {
+    // Create a map: note -> chord quality
+    // If a note belongs to multiple triads, root triad quality wins, else first found
+    const map: Record<string, string> = {};
+
+    // Lowercase and simplified notes for consistent matching
+    const simplifyNote = (n: string) => tonal.Note.simplify(n).toLowerCase();
+
+    // First assign 'none' to all circle notes
+    circleOfFifths.forEach((note) => {
+      map[simplifyNote(note)] = "none";
+    });
+
+    triads.forEach(({ root, notes, quality }) => {
+      const rootSimple = simplifyNote(root);
+      // Assign root note with triad quality (highest priority)
+      map[rootSimple] = quality;
+
+      // Assign other triad notes only if not already assigned root quality
+      notes.forEach((note) => {
+        const nSimple = simplifyNote(note);
+        // Assign only if not root and current value is 'none'
+        if (nSimple !== rootSimple && map[nSimple] === "none") {
+          map[nSimple] = quality;
+        }
+      });
+    });
+
+    return map;
+  }, [circleOfFifths, triads]);
 
   // Calculate angle step for 12 notes evenly spaced
   const angleStep = (2 * Math.PI) / circleOfFifths.length;
@@ -77,20 +137,13 @@ function Circle() {
 
           const isSelected = note === selectedRoot;
 
-          // Find scale degree index (0 to 6) for this note in major scale, use enharmonic to match
-          const degreeIndex = majorScale.findIndex(
-            (n) => tonal.Note.enharmonic(n) === tonal.Note.enharmonic(note)
-          );
-
-          // Outer note color by degree
-          let colorClass = "bg-gray-800 hover:bg-green-600 text-white";
-          if ([0, 3, 4].includes(degreeIndex)) {
-            colorClass = "bg-green-500 text-black"; // I, IV, V
-          } else if ([1, 2, 5].includes(degreeIndex)) {
-            colorClass = "bg-blue-500 text-black"; // ii, iii, vi
-          } else if (degreeIndex === 6) {
-            colorClass = "bg-purple-500 text-black"; // vii°
-          }
+          // Color class based on triad chord quality map
+          const colorClass =
+            chordQualityColors[
+              getChordQuality(
+                noteColors[tonal.Note.simplify(note).toLowerCase()]
+              ) || "none"
+            ];
 
           const borderClass = isSelected ? "border-4 border-yellow-400" : "";
 
@@ -107,25 +160,28 @@ function Circle() {
               </div>
 
               {/* Inner degree label positioned between center and outer note */}
-              {degreeIndex !== -1 &&
-                (() => {
-                  const innerRadius = radius * 0.6; // 60% radius inside the circle
-                  const xInner =
-                    center +
-                    innerRadius * Math.cos(i * angleStep - Math.PI / 2);
-                  const yInner =
-                    center +
-                    innerRadius * Math.sin(i * angleStep - Math.PI / 2);
-                  return (
-                    <div
-                      className={`absolute rounded-full w-8 h-8 flex items-center justify-center text-xs font-bold ${degreeColors[degreeIndex]}`}
-                      style={{ left: xInner - 16, top: yInner - 16 }}
-                      title={`Scale degree: ${degreeLabels[degreeIndex]} (${note})`}
-                    >
-                      {degreeLabels[degreeIndex]}
-                    </div>
-                  );
-                })()}
+              {(() => {
+                const degreeIndex = scale.findIndex(
+                  (n) =>
+                    tonal.Note.enharmonic(n) === tonal.Note.enharmonic(note)
+                );
+                if (degreeIndex === -1) return null;
+
+                const innerRadius = radius * 0.6; // 60% radius inside the circle
+                const xInner =
+                  center + innerRadius * Math.cos(i * angleStep - Math.PI / 2);
+                const yInner =
+                  center + innerRadius * Math.sin(i * angleStep - Math.PI / 2);
+
+                return (
+                  <div
+                    className={`absolute rounded-full w-8 h-8 flex items-center justify-center text-xs font-bold ${colorClass}`}
+                    style={{ left: xInner - 16, top: yInner - 16 }}
+                  >
+                    {degreeLabels[degreeIndex]}
+                  </div>
+                );
+              })()}
             </React.Fragment>
           );
         })}
