@@ -1,7 +1,7 @@
 import React from "react";
 
 function Circle() {
-  return <></>;
+  return <>Circle</>;
 }
 
 export default Circle;

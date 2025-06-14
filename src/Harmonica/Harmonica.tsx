@@ -1,7 +1,7 @@
 import React from "react";
 
 function Harmonica() {
-  return <></>;
+  return <>Harmonica</>;
 }
 
 export default Harmonica;

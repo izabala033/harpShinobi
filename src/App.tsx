@@ -5,13 +5,15 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import Circle from "./Circle";
-import Harmonica from "./Harmonica";
-import Settings from "./Settings";
+import Menu from "./Menu";
+import Circle from "./Circle/Circle";
+import Harmonica from "./Harmonica/Harmonica";
+import Settings from "./Settings/Settings";
 
 function App() {
   return (
     <Router>
+      <Menu />
       <Routes>
         <Route path="/circle" element={<Circle />} />
         <Route path="/harmonica" element={<Harmonica />} />
