@@ -1,5 +1,3 @@
-import React from "react";
-
 function Settings() {
   return <>Nothing here for now</>;
 }
