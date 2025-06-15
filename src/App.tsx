@@ -20,10 +20,13 @@ function App() {
         </div>
         <div className="flex-1 overflow-y-auto">
           <Routes>
-            <Route path="/circle" element={<Circle />} />
-            <Route path="/harmonica" element={<Harmonica />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/" element={<Navigate to="/circle" replace />} />
+            <Route path="/NoteBender/circle" element={<Circle />} />
+            <Route path="/NoteBender/harmonica" element={<Harmonica />} />
+            <Route path="/NoteBender/settings" element={<Settings />} />
+            <Route
+              path="/"
+              element={<Navigate to="/NoteBender/circle" replace />}
+            />
           </Routes>
         </div>
       </div>
