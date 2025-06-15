@@ -12,7 +12,7 @@ import Settings from "./Settings/Settings";
 
 function App() {
   return (
-    <Router basename="/NoteBender">
+    <Router>
       <div className="flex flex-col h-screen">
         <div>
           <Menu />
