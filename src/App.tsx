@@ -12,7 +12,7 @@ import Settings from "./Settings/Settings";
 
 function App() {
   return (
-    <Router>
+    <Router basename="/NoteBender">
       <div className="flex flex-col h-screen">
         <div>
           <Menu />
@@ -20,17 +20,10 @@ function App() {
         </div>
         <div className="flex-1 overflow-y-auto">
           <Routes>
-            <Route path="/NoteBender/circle" element={<Circle />} />
-            <Route path="/NoteBender/harmonica" element={<Harmonica />} />
-            <Route path="/NoteBender/settings" element={<Settings />} />
-            <Route
-              path="/"
-              element={<Navigate to="/NoteBender/circle" replace />}
-            />
-            <Route
-              path="/NoteBender"
-              element={<Navigate to="/NoteBender/circle" replace />}
-            />
+            <Route path="/circle" element={<Circle />} />
+            <Route path="/harmonica" element={<Harmonica />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/" element={<Navigate to="/circle" replace />} />
           </Routes>
         </div>
       </div>
