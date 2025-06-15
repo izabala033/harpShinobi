@@ -27,6 +27,10 @@ function App() {
               path="/"
               element={<Navigate to="/NoteBender/circle" replace />}
             />
+            <Route
+              path="/NoteBender"
+              element={<Navigate to="/NoteBender/circle" replace />}
+            />
           </Routes>
         </div>
       </div>
