@@ -188,6 +188,67 @@ function Circle() {
             );
           })}
       </div>
+      <div className="flex flex-col md:flex-row md:space-x-6 space-y-6 md:space-y-0 mt-8">
+        <div className="bg-gray-900 p-4 rounded-lg w-full md:w-1/2 text-sm space-y-2">
+          <h2 className="text-lg font-bold mb-2">
+            Triads in {modeTonic} {modeName}
+          </h2>
+          <ul className="space-y-1">
+            {triads.map(({ root, notes, quality }, idx) => (
+              <li
+                key={idx}
+                className="flex items-center justify-between px-2 py-1 bg-gray-800 rounded"
+              >
+                <span className="font-medium">
+                  {idx + 1}. {root}
+                </span>
+                <span className="text-sm">{notes.join(" - ")}</span>
+                <span
+                  className={`text-xs px-2 py-1 rounded font-semibold capitalize ${
+                    chordQualityColors[tonal.Chord.get(quality).type || "none"]
+                  }`}
+                >
+                  {quality}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="bg-gray-900 p-4 rounded-lg w-full md:w-1/2 text-sm space-y-2">
+          <h2 className="text-lg font-bold mb-2">Legend</h2>
+          <ul className="space-y-1">
+            <li>
+              <span className="inline-block w-4 h-4 bg-yellow-400 rounded-sm align-middle mr-2 border border-black"></span>
+              <span className="align-middle">Major triad</span>
+            </li>
+            <li>
+              <span className="inline-block w-4 h-4 bg-blue-600 rounded-sm align-middle mr-2"></span>
+              <span className="align-middle text-white">Minor triad</span>
+            </li>
+            <li>
+              <span className="inline-block w-4 h-4 bg-red-500 rounded-sm align-middle mr-2"></span>
+              <span className="align-middle text-white">Diminished triad</span>
+            </li>
+            <li>
+              <span className="inline-block w-4 h-4 bg-gray-800 rounded-sm align-middle mr-2 border border-white"></span>
+              <span className="align-middle">No triad / unclassified</span>
+            </li>
+            <li>
+              <span className="inline-block w-4 h-4 border-4 border-cyan-300 rounded-full align-middle mr-2"></span>
+              <span className="align-middle">
+                Tonic of selected mode (starting note)
+              </span>
+            </li>
+            <li>
+              <span className="inline-block w-4 h-4 bg-gray-600 rounded-sm align-middle mr-2"></span>
+              <span className="align-middle">
+                Numbers inside circle = scale degrees
+              </span>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   );
 }
