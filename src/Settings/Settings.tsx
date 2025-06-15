@@ -1,7 +1,7 @@
 import React from "react";
 
 function Settings() {
-  return <>Settings</>;
+  return <>Nothing here for now</>;
 }
 
 export default Settings;

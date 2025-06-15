@@ -9,7 +9,7 @@ const Menu: React.FC = () => (
     >
       Circle
     </Link>
-    <Link
+    {/* <Link
       to="/harmonica"
       className="text-white hover:text-green-400 transition-colors duration-300 font-semibold"
     >
@@ -20,7 +20,7 @@ const Menu: React.FC = () => (
       className="text-white hover:text-green-400 transition-colors duration-300 font-semibold"
     >
       Settings
-    </Link>
+    </Link> */}
   </nav>
 );
 

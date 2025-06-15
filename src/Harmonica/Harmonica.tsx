@@ -1,7 +1,7 @@
 import React from "react";
 
 function Harmonica() {
-  return <>Harmonica</>;
+  return <>Nothing here for now</>;
 }
 
 export default Harmonica;
