@@ -125,10 +125,10 @@ function Circle() {
               getChordQuality(noteColors[tonal.Note.chroma(note)]) || "none"
             ];
 
-          const isParentMajor =
+          const isTonicNote =
             tonal.Note.chroma(note) === tonal.Note.chroma(modeTonic);
 
-          const borderClass = isParentMajor ? "border-4 border-cyan-300" : "";
+          const borderClass = isTonicNote ? "border-4 border-cyan-300" : "";
 
           return (
             <React.Fragment key={note}>
