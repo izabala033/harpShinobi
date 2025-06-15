@@ -101,7 +101,7 @@ function Circle() {
   const angleStep = (2 * Math.PI) / circleOfFifths.length;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-950 text-white p-6 select-none">
+    <div className="flex flex-col items-center justify-center h-full bg-gray-950 text-white p-6 select-none">
       <h1 className="text-3xl font-bold mb-6">🎵 Circle of Fifths</h1>
 
       <div
