@@ -1,11 +1,19 @@
+// 🎨 Style Guide – Modern Blues Theory Palette
+// - major: bg-indigo-500 text-white
+// - minor: bg-sky-700 text-white
+// - diminished: bg-yellow-600 text-black
+// - none: bg-gray-800 text-white
+// - root highlight: border-4 border-amber-300
+// - mode selected: bg-indigo-400 text-black
+// - background: bg-gray-950
+
 import React, { useState, useMemo } from "react";
 import * as tonal from "tonal";
 
-const radius = 160; // outer circle radius in px
-const center = 180; // center x/y in px
+const radius = 160;
+const center = 180;
 const circleSize = center * 2;
 
-// Define modes with their harmonic order and display position
 const modesWithOrder = [
   { name: "Ionian", order: 1, label: "1st" },
   { name: "Mixolydian", order: 2, label: "2nd" },
@@ -27,20 +35,17 @@ const modeDegreesMap: Record<string, number> = {
 };
 
 const modeNames = modesWithOrder.map((m) => m.name);
-
-// Labels you want for scale degrees 1-7, index matches degree index
 const degreeLabels = ["1", "2", "3", "4", "5", "6", "7"];
 
-// Color classes for chord triads
+// Color classes for chord triads with strong visual contrast
 const chordQualityColors: Record<string, string> = {
-  major: "bg-green-500 text-black", // major triads
-  minor: "bg-blue-500 text-black", // minor triads
-  diminished: "bg-purple-500 text-black", // diminished triads
-  none: "bg-gray-800 text-white hover:bg-green-600", // not in triad
+  major: "bg-yellow-400 text-black",
+  minor: "bg-blue-600 text-white",
+  diminished: "bg-red-500 text-white",
+  none: "bg-gray-800 text-white hover:bg-green-600",
 };
 
 function Circle() {
-  // Build circle of fifths notes array in order (C, G, D, A, E, B, F#, C#, G#, D#, A#, F)
   const circleOfFifths = useMemo(() => {
     const notes = [];
     let note = "C";
@@ -52,20 +57,14 @@ function Circle() {
   }, []);
 
   const [selectedRoot, setSelectedRoot] = useState("C");
-  const [selectedMode, setSelectedMode] = useState(0); // Ionian = mode 0
-
+  const [selectedMode, setSelectedMode] = useState(0);
   const modeName = modeNames[selectedMode];
 
-  // Calculate the tonic of the mode correctly based on mode degree mapping
   const majorScaleNotes = tonal.Scale.get(selectedRoot + " major").notes;
   const modeDegree = modeDegreesMap[modeName.toLowerCase()] || 1;
   const modeTonic = majorScaleNotes[modeDegree - 1];
-
-  // Get scale notes for selected root & mode
-  // Use tonal.Scale.get but with mode tonic and mode name to get accurate notes
   const scale = tonal.Scale.get(modeTonic + " " + modeName.toLowerCase()).notes;
 
-  // Helper to build triads for each degree
   const triads = useMemo(() => {
     const triadsArray = [];
     for (let i = 0; i < 7; i++) {
@@ -80,12 +79,10 @@ function Circle() {
     return triadsArray;
   }, [scale]);
 
-  // Helper to parse chord quality from triad string
   function getChordQuality(triad: string) {
     return tonal.Chord.get(triad).type.toLowerCase();
   }
 
-  // Map each note in circleOfFifths to chord quality based on triads it belongs to
   const noteColors = useMemo(() => {
     const map: Record<string, string> = {};
     const normalizeNote = (n: string) => tonal.Note.chroma(n);
@@ -108,19 +105,16 @@ function Circle() {
     return map;
   }, [circleOfFifths, triads]);
 
-  // Calculate angle step for 12 notes evenly spaced
   const angleStep = (2 * Math.PI) / circleOfFifths.length;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-6 select-none">
-      <h1 className="text-3xl font-bold mb-6">Circle of Fifths</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-950 text-white p-6 select-none">
+      <h1 className="text-3xl font-bold mb-6">🎵 Circle of Fifths</h1>
 
-      {/* Outer circle container */}
       <div
         className="relative"
         style={{ width: circleSize, height: circleSize, marginBottom: 40 }}
       >
-        {/* Outer notes on circle of fifths */}
         {circleOfFifths.map((note, i) => {
           const angle = i * angleStep - Math.PI / 2;
           const x = center + radius * Math.cos(angle);
@@ -134,11 +128,10 @@ function Circle() {
           const isParentMajor =
             tonal.Note.chroma(note) === tonal.Note.chroma(modeTonic);
 
-          const borderClass = isParentMajor ? "border-4 border-yellow-400" : "";
+          const borderClass = isParentMajor ? "border-4 border-cyan-300" : "";
 
           return (
             <React.Fragment key={note}>
-              {/* Outer note circle */}
               <div
                 onClick={() => {
                   setSelectedRoot(note);
@@ -151,7 +144,6 @@ function Circle() {
                 {note}
               </div>
 
-              {/* Inner degree label positioned between center and outer note */}
               {(() => {
                 const degreeIndex = scale.findIndex(
                   (n) => tonal.Note.chroma(n) === tonal.Note.chroma(note)
@@ -178,7 +170,6 @@ function Circle() {
         })}
       </div>
 
-      {/* Mode selector with harmonic order */}
       <div className="flex gap-3 overflow-x-auto max-w-full px-4 mt-4">
         {modesWithOrder
           .sort((a, b) => a.order - b.order)
@@ -193,8 +184,8 @@ function Circle() {
                 className={`cursor-pointer px-4 py-2 rounded font-semibold whitespace-nowrap
                 ${
                   isSelected
-                    ? "bg-green-500 text-black shadow-lg"
-                    : "bg-gray-800 hover:bg-green-600 transition-colors"
+                    ? "bg-indigo-400 text-black shadow-lg"
+                    : "bg-gray-800 text-white hover:bg-indigo-500 transition-colors"
                 }`}
                 title={`Select mode: ${name}`}
               >
