@@ -14,28 +14,25 @@ const radius = 160;
 const center = 180;
 const circleSize = center * 2;
 
-const modesWithOrder = [
-  { name: "Ionian", order: 1, label: "1st" },
-  { name: "Mixolydian", order: 2, label: "2nd" },
-  { name: "Dorian", order: 3, label: "3rd" },
-  { name: "Aeolian", order: 4, label: "4th" },
-  { name: "Phrygian", order: 5, label: "5th" },
-  { name: "Locrian", order: 6, label: "6th" },
-  { name: "Lydian", order: 12, label: "12th" },
+const modes = [
+  { name: "Ionian", degree: 1, harmonicaPosition: "1st", harmonicaOrder: 1 },
+  {
+    name: "Mixolydian",
+    degree: 5,
+    harmonicaPosition: "2nd",
+    harmonicaOrder: 2,
+  },
+  { name: "Dorian", degree: 2, harmonicaPosition: "3rd", harmonicaOrder: 3 },
+  { name: "Aeolian", degree: 6, harmonicaPosition: "4th", harmonicaOrder: 4 },
+  { name: "Phrygian", degree: 3, harmonicaPosition: "5th", harmonicaOrder: 5 },
+  { name: "Locrian", degree: 7, harmonicaPosition: "6th", harmonicaOrder: 6 },
+  { name: "Lydian", degree: 4, harmonicaPosition: "12th", harmonicaOrder: 12 },
 ];
 
-const modeDegreesMap: Record<string, number> = {
-  ionian: 1,
-  dorian: 2,
-  phrygian: 3,
-  lydian: 4,
-  mixolydian: 5,
-  aeolian: 6,
-  locrian: 7,
-};
-
-const modeNames = modesWithOrder.map((m) => m.name);
-const degreeLabels = ["1", "2", "3", "4", "5", "6", "7"];
+const modeNames = modes.map((m) => m.name);
+const modeDegreesMap: Record<string, number> = Object.fromEntries(
+  modes.map((m) => [m.name.toLowerCase(), m.degree])
+);
 
 // Color classes for chord triads with strong visual contrast
 const chordQualityColors: Record<string, string> = {
@@ -79,10 +76,6 @@ function Circle() {
     return triadsArray;
   }, [scale]);
 
-  function getChordQuality(triad: string) {
-    return tonal.Chord.get(triad).type.toLowerCase();
-  }
-
   const noteColors = useMemo(() => {
     const map: Record<string, string> = {};
     const normalizeNote = (n: string) => tonal.Note.chroma(n);
@@ -120,10 +113,11 @@ function Circle() {
           const x = center + radius * Math.cos(angle);
           const y = center + radius * Math.sin(angle);
 
+          const chroma = tonal.Note.chroma(note);
           const colorClass =
             chordQualityColors[
-              getChordQuality(noteColors[tonal.Note.chroma(note)]) || "none"
-            ];
+              tonal.Chord.get(noteColors[chroma] || "").type || "none"
+            ] || chordQualityColors.none;
 
           const isTonicNote =
             tonal.Note.chroma(note) === tonal.Note.chroma(modeTonic);
@@ -161,7 +155,7 @@ function Circle() {
                     className={`absolute rounded-full w-8 h-8 flex items-center justify-center text-xs font-bold ${colorClass}`}
                     style={{ left: xInner - 16, top: yInner - 16 }}
                   >
-                    {degreeLabels[degreeIndex]}
+                    {degreeIndex + 1}
                   </div>
                 );
               })()}
@@ -171,9 +165,9 @@ function Circle() {
       </div>
 
       <div className="flex gap-3 overflow-x-auto max-w-full px-4 mt-4">
-        {modesWithOrder
-          .sort((a, b) => a.order - b.order)
-          .map(({ name, order, label }) => {
+        {modes
+          .sort((a, b) => a.harmonicaOrder - b.harmonicaOrder)
+          .map(({ name, harmonicaPosition }) => {
             const modeIndex = modeNames.indexOf(name);
             const isSelected = modeIndex === selectedMode;
 
@@ -182,14 +176,14 @@ function Circle() {
                 key={name}
                 onClick={() => setSelectedMode(modeIndex)}
                 className={`cursor-pointer px-4 py-2 rounded font-semibold whitespace-nowrap
-                ${
-                  isSelected
-                    ? "bg-indigo-400 text-black shadow-lg"
-                    : "bg-gray-800 text-white hover:bg-indigo-500 transition-colors"
-                }`}
+                  ${
+                    isSelected
+                      ? "bg-indigo-400 text-black shadow-lg"
+                      : "bg-gray-800 text-white hover:bg-indigo-500 transition-colors"
+                  }`}
                 title={`Select mode: ${name}`}
               >
-                {name} ({label})
+                {name} ({harmonicaPosition})
               </div>
             );
           })}
