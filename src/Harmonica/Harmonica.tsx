@@ -161,7 +161,7 @@ function Harmonica() {
           showLine = true;
           // Map cents offset (±50 cents) to ±8px vertical offset
           // 0 cents = center (0px), 50 cents = 8px
-          offsetY = (detectedNote.cents / 50) * 8;
+          offsetY = -(detectedNote.cents / 50) * 8;
         }
 
         return (
