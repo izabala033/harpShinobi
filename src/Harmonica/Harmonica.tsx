@@ -84,17 +84,17 @@ const generateLayout = (key: string) => {
 
 const keys = [
   { label: "C", value: "C4" },
-  { label: "Db", value: "Db4" },
   { label: "D", value: "D4" },
-  { label: "Eb", value: "Eb4" },
   { label: "E", value: "E4" },
   { label: "F", value: "F4" },
-  { label: "F#", value: "F#4" },
   { label: "G", value: "G4" },
-  { label: "Ab", value: "Ab4" },
   { label: "A", value: "A3" },
-  { label: "Bb", value: "Bb4" },
   { label: "B", value: "B4" },
+  { label: "Db", value: "Db4" },
+  { label: "Eb", value: "Eb4" },
+  { label: "F#", value: "F#4" },
+  { label: "Ab", value: "Ab4" },
+  { label: "Bb", value: "Bb4" },
 ];
 
 function freqToNoteAndCents(freq: number) {
