@@ -1,54 +1,35 @@
-# React + TypeScript + Vite
+# 🎶 NoteBender - Harmonica Pitch Detection
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[👉 Try the Live Demo](https://izabala033.github.io/NoteBender/#/harmonica)
 
-Currently, two official plugins are available:
+NoteBender is a real-time pitch detection tool designed for harmonica players. It helps visualize what note you're playing, how accurately you're hitting it (in cents), and maps it to the blow/draw layout of a diatonic harmonica in various keys.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 🧩 Features
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- 🎙 Real-time pitch detection using microphone input
+- 🔍 Visual feedback on **which hole** you're playing
+- 🎯 Cents-level pitch accuracy with animated indicators
+- 🎼 Support for **multiple harmonica keys** (C, A, D, etc.)
+- 🔄 Automatically detects and highlights the closest matching note
+- 🌀 Interactive Circle of Fifths visualization for exploring scales, modes, and chords
+- 📦 Lightweight, fast loading — built with **Vite**
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
+---
+
+## 🛠️ Running Locally
+
+This project uses [Vite](https://vitejs.dev/) for fast development.
+
+### 📦 Install dependencies
+
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+🚀 Start development server
 
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    "react-x": reactX,
-    "react-dom": reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs["recommended-typescript"].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-});
+```bash
+npm run dev
 ```
