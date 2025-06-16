@@ -169,7 +169,7 @@ function Harmonica() {
             key={`${label}-${idx}`}
             className={`relative rounded px-2 py-1 border border-gray-700 ${colorClass}`}
           >
-            {tonal.Note.pitchClass(note.name)}
+            {tonal.Note.simplify(tonal.Note.pitchClass(note.name))}
             {showLine && renderLine(offsetY)}
           </div>
         );
