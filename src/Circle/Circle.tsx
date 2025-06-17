@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import * as tonal from "tonal";
 
 const getResponsiveSize = () => {
@@ -40,6 +41,7 @@ function Circle() {
   const [selectedRoot, setSelectedRoot] = useState("C");
   const [selectedMode, setSelectedMode] = useState(0);
   const [dimensions, setDimensions] = useState(getResponsiveSize());
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handleResize = () => setDimensions(getResponsiveSize());
@@ -138,9 +140,9 @@ function Circle() {
                 }}
                 className={`absolute cursor-pointer rounded-full w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center font-semibold text-sm sm:text-lg transition-colors duration-300 ${colorClass} ${borderClass}`}
                 style={{ left: x - 20, top: y - 20 }}
-                title={`Select root: ${note}`}
+                title={`Select root: ${t(note)}`}
               >
-                {note}
+                {t(note)}
               </div>
 
               {(() => {
@@ -195,7 +197,7 @@ function Circle() {
       <div className="flex flex-col md:flex-row md:space-x-6 space-y-6 md:space-y-0 mt-6 sm:mt-8 w-full px-2 sm:px-4 max-w-5xl">
         <div className="bg-gray-900 p-4 rounded-lg w-full text-sm space-y-2">
           <h2 className="text-lg font-bold mb-2">
-            Triads in {modeTonic} {modeName}
+            Triads in {t(modeTonic)} {modeName}
           </h2>
           <ul className="space-y-1">
             {triads.map(({ root, notes, quality }, idx) => (
@@ -204,15 +206,24 @@ function Circle() {
                 className="flex items-center justify-between px-2 py-1 bg-gray-800 rounded text-xs sm:text-sm"
               >
                 <span className="font-medium">
-                  {idx + 1}. {root}
+                  {idx + 1}. {t(root)}
                 </span>
-                <span>{notes.join(" - ")}</span>
+                <span>{notes.map((note) => t(note)).join(" - ")}</span>{" "}
                 <span
                   className={`text-xs px-2 py-1 rounded font-semibold capitalize ${
                     chordQualityColors[tonal.Chord.get(quality).type || "none"]
                   }`}
                 >
-                  {quality}
+                  {(() => {
+                    const chordData = tonal.Chord.get(quality); // e.g., C#m → { tonic: "C#", type: "m", name: "C#m" }
+
+                    if (!chordData.tonic) return quality; // fallback
+
+                    const translatedRoot = t(chordData.tonic);
+                    const suffix = chordData.type; // e.g., "m", "maj7", "dim"
+
+                    return `${translatedRoot} ${suffix}`;
+                  })()}
                 </span>
               </li>
             ))}
