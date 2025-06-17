@@ -49,7 +49,7 @@ export function usePitchDetector(minClarity: number = 0.95) {
             );
 
           if (detectedClarity > minClarity) {
-            setPitch(detectedPitch.toFixed(2));
+            setPitch(detectedPitch.toFixed(0));
             setClarity(detectedClarity.toFixed(2));
           } else {
             setPitch(null);
@@ -73,6 +73,5 @@ export function usePitchDetector(minClarity: number = 0.95) {
       mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
     };
   }, [minClarity]);
-
   return { pitch, clarity };
 }
