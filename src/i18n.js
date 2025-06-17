@@ -3,28 +3,25 @@ import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 
 const resources = {
-  en: {
-    translation: {
-      notes: {
-        C: "C",
-        D: "D",
-        E: "E",
-        F: "F",
-        G: "G",
-        A: "A",
-        B: "B",
-      },
-    },
-  },
   solfege: {
     translation: {
       notes: {
         C: "Do",
+        "C#": "Do#",
+        Db: "Reb",
         D: "Re",
+        "D#": "Re#",
+        Eb: "Mib",
         E: "Mi",
         F: "Fa",
+        "F#": "Fa#",
+        Gb: "Solb",
         G: "Sol",
+        "G#": "Sol#",
+        Ab: "Lab",
         A: "La",
+        "A#": "La#",
+        Bb: "Sib",
         B: "Si",
       },
     },
@@ -32,14 +29,16 @@ const resources = {
 };
 
 i18n
-  .use(LanguageDetector) // Detect language from browser
-  .use(initReactI18next) // Pass i18n instance to react-i18next
+  .use(LanguageDetector)
+  .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: "en", // Default if detection fails
+    fallbackLng: "en", // English is default
     interpolation: {
-      escapeValue: false, // React already escapes
+      escapeValue: false,
     },
+    // If no translation found, return the key (so English keys show by default)
+    parseMissingKeyHandler: (key) => key,
   });
 
 export default i18n;
