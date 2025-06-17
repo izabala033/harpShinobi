@@ -2,43 +2,41 @@ import { useState, useMemo } from "react";
 import * as tonal from "tonal";
 import { usePitchDetector } from "../hooks/usePitchDetector";
 import { Note } from "tonal";
+import { useTranslation } from "react-i18next";
 
-// TODO: ADD OVERBLOWS
 type TonalNote = ReturnType<typeof Note.get>;
 const baseKey = "C4";
 const generateLayout = (key: string) => {
   const blowDegrees = [
-    "1P", // unison
-    "3M", // major 3rd
-    "5P", // perfect 5th
-    "8P", // octave
-    "10M", // major 10th (3M + 8P)
-    "12P", // perfect 12th (5P + 8P)
-    "15P", // two octaves
-    "17M", // major 17th (3M + 15P)
-    "19P", // perfect 19th (5P + 15P)
-    "22P", // two octaves + octave (optional)
+    "1P",
+    "3M",
+    "5P",
+    "8P",
+    "10M",
+    "12P",
+    "15P",
+    "17M",
+    "19P",
+    "22P",
   ];
   const blowRoots = blowDegrees.map((interval) =>
     Note.transpose(key, interval)
   );
   const drawDegrees = [
-    "2M", // D4  (major 2nd)
-    "5P", // G4  (perfect 5th)
-    "7M", // B4  (major 7th)
-    "9M", // D5  (octave + major 2nd)
-    "11m", // F5  (octave + perfect 4th)
-    "13M", // A5  (octave + major 6th)
-    "14M", // B5  (octave + major 7th)
-    "16M", // D6  (two octaves + major 2nd)
-    "18m", // F6  (two octaves + perfect 4th)
-    "20M", // A6  (two octaves + major 6th)
+    "2M",
+    "5P",
+    "7M",
+    "9M",
+    "11m",
+    "13M",
+    "14M",
+    "16M",
+    "18m",
+    "20M",
   ];
-
   const drawRoots = drawDegrees.map((interval) =>
     Note.transpose(key, interval)
   );
-
   const blow = blowRoots.map(Note.get);
   const draw = drawRoots.map(Note.get);
 
@@ -49,7 +47,7 @@ const generateLayout = (key: string) => {
   const wholeStepBlowBendHoles = [10]; // hole 10 only
   const overblowHoles = [8, 9, 10]; // holes that support overblow
   const halfStepDrawBendOverdrawHoles = [1, 2, 3, 4, 6];
-  const wholeStepDrawBendHoles = [2, 3]; // only hole 2
+  const wholeStepDrawBendHoles = [2, 3]; // only hole 2 and 3
   const oneAndHalfStepDrawBendHoles = [3]; // only hole 3
 
   return {
@@ -116,6 +114,7 @@ function freqToNoteAndCents(freq: number) {
 }
 
 function Harmonica() {
+  const { t } = useTranslation();
   const { pitch, clarity } = usePitchDetector(0.7);
   const [key, setKey] = useState(baseKey);
   const layout = useMemo(() => generateLayout(key), [key]);
@@ -141,6 +140,8 @@ function Harmonica() {
     );
   };
 
+  console.log(t("D"));
+
   const renderRow = (
     notes: (TonalNote | null)[],
     label?: string,
@@ -164,12 +165,18 @@ function Harmonica() {
           offsetY = -(detectedNote.cents / 50) * 8;
         }
 
+        // Use t() to translate note pitch classes, fallback to original
+        const simplifiedPitchClass = tonal.Note.simplify(
+          tonal.Note.pitchClass(note.name)
+        );
+        const translatedNoteName = t(simplifiedPitchClass);
+
         return (
           <div
             key={`${label}-${idx}`}
             className={`relative rounded px-2 py-1 border border-gray-700 ${colorClass}`}
           >
-            {tonal.Note.simplify(tonal.Note.pitchClass(note.name))}
+            {translatedNoteName}
             {showLine && renderLine(offsetY)}
           </div>
         );
@@ -206,7 +213,7 @@ function Harmonica() {
         >
           {keys.map((k) => (
             <option key={k.value} value={k.value}>
-              {k.label}
+              {t(k.label)}
             </option>
           ))}
         </select>
@@ -247,7 +254,7 @@ function Harmonica() {
       {/* Harmonica layout */}
       <div className="max-w-xl w-full text-center">
         <h2 className="text-xl font-semibold mb-4">
-          🎵 Harmonica Layout ({Note.pitchClass(key)} Major)
+          🎵 Harmonica Layout ({t(Note.pitchClass(key))} Major)
         </h2>
 
         {renderRow(
