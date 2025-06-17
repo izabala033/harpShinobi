@@ -116,7 +116,7 @@ function freqToNoteAndCents(freq: number) {
 }
 
 function Harmonica() {
-  const { pitch, clarity } = usePitchDetector();
+  const { pitch, clarity } = usePitchDetector(0.9);
   const [key, setKey] = useState(baseKey);
   const layout = useMemo(() => generateLayout(key), [key]);
   // Get detected note and cents offset from pitch

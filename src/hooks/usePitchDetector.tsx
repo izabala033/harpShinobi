@@ -1,4 +1,3 @@
-// usePitchDetector.ts
 import { useEffect, useRef, useState } from "react";
 import { PitchDetector } from "pitchy";
 
@@ -11,43 +10,59 @@ export function usePitchDetector(minClarity: number = 0.95) {
   const pitchDetectorRef = useRef<ReturnType<
     typeof PitchDetector.forFloat32Array
   > | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
 
   useEffect(() => {
     let analyser: AnalyserNode;
     let buffer: Float32Array;
 
     const initAudio = async () => {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const AudioContext =
-        window.AudioContext || (window as any).webkitAudioContext;
-      const audioContext = new AudioContext();
-      audioContextRef.current = audioContext;
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+        mediaStreamRef.current = stream;
 
-      analyser = audioContext.createAnalyser();
-      analyser.fftSize = 2048;
-      const mediaStreamSource = audioContext.createMediaStreamSource(stream);
-      mediaStreamSource.connect(analyser);
+        const AudioContext =
+          window.AudioContext || (window as any).webkitAudioContext;
+        const audioContext = new AudioContext();
+        audioContextRef.current = audioContext;
 
-      buffer = new Float32Array(analyser.fftSize);
-      pitchDetectorRef.current = PitchDetector.forFloat32Array(buffer.length);
+        analyser = audioContext.createAnalyser();
+        analyser.fftSize = 2048;
+        const mediaStreamSource = audioContext.createMediaStreamSource(stream);
+        mediaStreamSource.connect(analyser);
 
-      const updatePitch = () => {
-        analyser.getFloatTimeDomainData(buffer);
-        const [detectedPitch, detectedClarity] =
-          pitchDetectorRef.current!.findPitch(buffer, audioContext.sampleRate);
+        buffer = new Float32Array(analyser.fftSize);
+        pitchDetectorRef.current = PitchDetector.forFloat32Array(buffer.length);
 
-        if (detectedClarity > minClarity) {
-          setPitch(detectedPitch.toFixed(2));
-          setClarity(detectedClarity.toFixed(2));
-        } else {
-          setPitch(null);
-          setClarity(null);
-        }
+        const updatePitch = async () => {
+          if (audioContext.state === "suspended") {
+            await audioContext.resume();
+          }
 
-        rafIdRef.current = requestAnimationFrame(updatePitch);
-      };
+          analyser.getFloatTimeDomainData(buffer);
+          const [detectedPitch, detectedClarity] =
+            pitchDetectorRef.current!.findPitch(
+              buffer,
+              audioContext.sampleRate
+            );
 
-      updatePitch();
+          if (detectedClarity > minClarity) {
+            setPitch(detectedPitch.toFixed(2));
+            setClarity(detectedClarity.toFixed(2));
+          } else {
+            setPitch(null);
+            setClarity(null);
+          }
+
+          rafIdRef.current = requestAnimationFrame(updatePitch);
+        };
+
+        updatePitch();
+      } catch (error) {
+        console.error("Error accessing microphone:", error);
+      }
     };
 
     initAudio();
@@ -55,6 +70,7 @@ export function usePitchDetector(minClarity: number = 0.95) {
     return () => {
       if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
       audioContextRef.current?.close();
+      mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
     };
   }, [minClarity]);
 
