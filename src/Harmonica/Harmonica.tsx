@@ -3,115 +3,14 @@ import * as tonal from "tonal";
 import { usePitchDetector } from "../hooks/usePitchDetector";
 import { Note } from "tonal";
 import { useTranslation } from "react-i18next";
+import {
+  harmonicaKeys,
+  generateLayout,
+  freqToNoteAndCents,
+} from "../utils/utils";
 
 type TonalNote = ReturnType<typeof Note.get>;
 const baseKey = "C4";
-const generateLayout = (key: string) => {
-  const blowDegrees = [
-    "1P",
-    "3M",
-    "5P",
-    "8P",
-    "10M",
-    "12P",
-    "15P",
-    "17M",
-    "19P",
-    "22P",
-  ];
-  const blowRoots = blowDegrees.map((interval) =>
-    Note.transpose(key, interval)
-  );
-  const drawDegrees = [
-    "2M",
-    "5P",
-    "7M",
-    "9M",
-    "11m",
-    "13M",
-    "14M",
-    "16M",
-    "18m",
-    "20M",
-  ];
-  const drawRoots = drawDegrees.map((interval) =>
-    Note.transpose(key, interval)
-  );
-  const blow = blowRoots.map(Note.get);
-  const draw = drawRoots.map(Note.get);
-
-  const safeTranspose = (note: string | null, interval: string) =>
-    note ? Note.get(Note.transpose(note, interval)) : null;
-
-  // Define where each bend/overblow is allowed
-  const wholeStepBlowBendHoles = [10]; // hole 10 only
-  const overblowHoles = [8, 9, 10]; // holes that support overblow
-  const halfStepDrawBendOverdrawHoles = [1, 2, 3, 4, 6];
-  const wholeStepDrawBendHoles = [2, 3]; // only hole 2 and 3
-  const oneAndHalfStepDrawBendHoles = [3]; // only hole 3
-
-  return {
-    blow,
-    draw,
-
-    wholeStepBlowBend: blowRoots.map((n, i) =>
-      wholeStepBlowBendHoles.includes(i + 1) ? safeTranspose(n, "-2M") : null
-    ),
-
-    overblowHalfStepBlowBend: blowRoots.map((n, i) =>
-      overblowHoles.includes(i + 1) ? safeTranspose(n, "-2m") : null
-    ),
-
-    halfStepDrawBendOverdraw: drawRoots.map((n, i) =>
-      halfStepDrawBendOverdrawHoles.includes(i + 1)
-        ? safeTranspose(n, "-2m")
-        : null
-    ),
-
-    wholeStepDrawBend: drawRoots.map((n, i) =>
-      wholeStepDrawBendHoles.includes(i + 1) ? safeTranspose(n, "-2M") : null
-    ),
-
-    oneAndHalfStepDrawBend: drawRoots.map((n, i) =>
-      oneAndHalfStepDrawBendHoles.includes(i + 1)
-        ? safeTranspose(n, "-3m")
-        : null
-    ),
-  };
-};
-
-const keys = [
-  { label: "C", value: "C4" },
-  { label: "D", value: "D4" },
-  { label: "E", value: "E4" },
-  { label: "F", value: "F4" },
-  { label: "G", value: "G3" },
-  { label: "A", value: "A3" },
-  { label: "B", value: "B3" },
-  { label: "Db", value: "Db4" },
-  { label: "Eb", value: "Eb4" },
-  { label: "F#", value: "F#4" },
-  { label: "Ab", value: "Ab3" },
-  { label: "Bb", value: "Bb3" },
-];
-
-function freqToNoteAndCents(freq: number) {
-  const noteName = tonal.Note.fromFreq(freq); // e.g. "C4"
-  if (!noteName) return null;
-
-  const baseFreq = tonal.Note.freq(noteName);
-  if (!baseFreq) return null;
-
-  const cents = 1200 * Math.log2(freq / baseFreq);
-
-  // Extract pitch class (C, D#, etc.)
-  const noteNoOctave = tonal.Note.pitchClass(noteName); // e.g., "C"
-  return {
-    note: noteName, // full note with octave, e.g., "C4"
-    pitchClass: noteNoOctave, // just "C"
-    cents,
-  };
-}
 
 function Harmonica() {
   const { t } = useTranslation();
@@ -211,7 +110,7 @@ function Harmonica() {
           onChange={(e) => setKey(e.target.value)}
           className="bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white"
         >
-          {keys.map((k) => (
+          {harmonicaKeys.map((k) => (
             <option key={k.value} value={k.value}>
               {t(k.label)}
             </option>
