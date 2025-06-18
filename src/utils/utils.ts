@@ -1,4 +1,4 @@
-import { Note } from "tonal";
+import { Note, Interval } from "tonal";
 
 export type TonalNote = ReturnType<typeof Note.get>;
 
@@ -56,10 +56,46 @@ export function generateLayout(key: string) {
 
   // Define where each bend/overblow is allowed
   const wholeStepBlowBendHoles = [10]; // hole 10 only
-  const overblowHoles = [8, 9, 10]; // holes that support overblow
-  const halfStepDrawBendOverdrawHoles = [1, 2, 3, 4, 6];
+  const halfStepBlowBendHoles = [8, 9, 10]; // holes that support
+  const halfStepDrawBendHoles = [1, 2, 3, 4, 6];
   const wholeStepDrawBendHoles = [2, 3]; // only hole 2 and 3
   const oneAndHalfStepDrawBendHoles = [3]; // only hole 3
+
+  // Not used because the seminotes vary for each hole
+  // const overblowHoles = [1, 4, 5, 6];
+  // const overdrawHoles = [7, 9, 10];
+
+  const overblowinterval146 = Interval.fromSemitones(3);
+  const overblowinterval5 = Interval.fromSemitones(2);
+
+  const overdraw7 = Interval.fromSemitones(2);
+  const overdraw9 = Interval.fromSemitones(3);
+  const overdraw10 = Interval.fromSemitones(4);
+
+  const overblowNotes = blowRoots.map((note, i) => {
+    const hole = i + 1;
+    if ([1, 4, 6].includes(hole)) {
+      return safeTranspose(note, overblowinterval146);
+    }
+    if (hole === 5) {
+      return safeTranspose(note, overblowinterval5);
+    }
+    return null;
+  });
+
+  const overdrawNotes = drawRoots.map((note, i) => {
+    const hole = i + 1;
+    if (hole === 7) {
+      return safeTranspose(note, overdraw7);
+    }
+    if (hole === 9) {
+      return safeTranspose(note, overdraw9);
+    }
+    if (hole === 10) {
+      return safeTranspose(note, overdraw10);
+    }
+    return null;
+  });
 
   return {
     blow,
@@ -69,14 +105,12 @@ export function generateLayout(key: string) {
       wholeStepBlowBendHoles.includes(i + 1) ? safeTranspose(n, "-2M") : null
     ),
 
-    overblowHalfStepBlowBend: blowRoots.map((n, i) =>
-      overblowHoles.includes(i + 1) ? safeTranspose(n, "-2m") : null
+    HalfStepBlowBend: blowRoots.map((n, i) =>
+      halfStepBlowBendHoles.includes(i + 1) ? safeTranspose(n, "-2m") : null
     ),
 
     halfStepDrawBendOverdraw: drawRoots.map((n, i) =>
-      halfStepDrawBendOverdrawHoles.includes(i + 1)
-        ? safeTranspose(n, "-2m")
-        : null
+      halfStepDrawBendHoles.includes(i + 1) ? safeTranspose(n, "-2m") : null
     ),
 
     wholeStepDrawBend: drawRoots.map((n, i) =>
@@ -88,6 +122,8 @@ export function generateLayout(key: string) {
         ? safeTranspose(n, "-3m")
         : null
     ),
+    overblow: overblowNotes,
+    overdraw: overdrawNotes,
   };
 }
 
@@ -118,43 +154,54 @@ export function getHarmonicaHoleForNote(
 
   if (noteMidi === null) return null;
 
-  const formatHole = (index: number, bend: number, isBlow: boolean) => {
+  const formatHole = (
+    index: number,
+    bend: number,
+    isBlow: boolean,
+    isOverdrawOrOverblow: boolean
+  ) => {
     const hole = isBlow ? index + 1 : -(index + 1);
     const apostrophes = `'`.repeat(bend);
-    return `${hole}${apostrophes}`;
+    const overnote = isOverdrawOrOverblow ? "o" : "";
+    return `${hole}${apostrophes}${overnote}`;
   };
 
   for (let i = 0; i < 10; i++) {
     if (layout.blow[i] && Note.midi(layout.blow[i]!.name) === noteMidi)
-      return formatHole(i, 0, true);
+      return formatHole(i, 0, true, false);
     if (
       layout.wholeStepBlowBend[i] &&
       Note.midi(layout.wholeStepBlowBend[i]!.name) === noteMidi
     )
-      return formatHole(i, 1, true);
+      return formatHole(i, 1, true, false);
     if (
-      layout.overblowHalfStepBlowBend[i] &&
-      Note.midi(layout.overblowHalfStepBlowBend[i]!.name) === noteMidi
+      layout.HalfStepBlowBend[i] &&
+      Note.midi(layout.HalfStepBlowBend[i]!.name) === noteMidi
     )
-      return formatHole(i, 1, true);
+      return formatHole(i, 1, true, false);
 
     if (layout.draw[i] && Note.midi(layout.draw[i]!.name) === noteMidi)
-      return formatHole(i, 0, false);
+      return formatHole(i, 0, false, false);
     if (
       layout.halfStepDrawBendOverdraw[i] &&
       Note.midi(layout.halfStepDrawBendOverdraw[i]!.name) === noteMidi
     )
-      return formatHole(i, 1, false);
+      return formatHole(i, 1, false, false);
     if (
       layout.wholeStepDrawBend[i] &&
       Note.midi(layout.wholeStepDrawBend[i]!.name) === noteMidi
     )
-      return formatHole(i, 2, false);
+      return formatHole(i, 2, false, false);
     if (
       layout.oneAndHalfStepDrawBend[i] &&
       Note.midi(layout.oneAndHalfStepDrawBend[i]!.name) === noteMidi
     )
-      return formatHole(i, 3, false);
+      return formatHole(i, 3, false, false);
+
+    if (layout.overblow[i] && Note.midi(layout.overblow[i]!.name) === noteMidi)
+      return formatHole(i, 0, true, true);
+    if (layout.overdraw[i] && Note.midi(layout.overdraw[i]!.name) === noteMidi)
+      return formatHole(i, 0, false, true);
   }
 
   return null;

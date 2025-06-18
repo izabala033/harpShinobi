@@ -162,8 +162,8 @@ function Harmonica() {
           "bg-purple-700 text-white"
         )}
         {renderRow(
-          layout.overblowHalfStepBlowBend,
-          "Overblow + Half Step Blow Bend",
+          layout.HalfStepBlowBend,
+          "Half Step Blow Bend",
           "bg-indigo-700 text-white"
         )}
         {renderRow(layout.blow, "Blow", "bg-blue-600 text-white")}

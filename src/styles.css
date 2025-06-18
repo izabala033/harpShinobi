@@ -1,1 +1,6 @@
 @import "tailwindcss";
+
+/* This will apply to the annotated notes of the tab. Move them a bit down to not overlap with another notes */
+.vf-text {
+  transform: translateY(15px);
+}

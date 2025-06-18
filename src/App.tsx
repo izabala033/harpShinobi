@@ -8,6 +8,7 @@ import Menu from "./Menu";
 import Circle from "./Circle/Circle";
 import Harmonica from "./Harmonica/Harmonica";
 import Settings from "./Settings/Settings";
+import MusicXML from "./MusicXML/MusicXML";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             <Route path="/circle" element={<Circle />} />
             <Route path="/harmonica" element={<Harmonica />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/musicxml" element={<MusicXML />} />
             <Route path="/" element={<Navigate to="/harmonica" replace />} />
           </Routes>
         </div>

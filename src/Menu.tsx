@@ -18,6 +18,12 @@ const Menu: React.FC = () => (
       >
         Harmonica
       </Link>
+      <Link
+        to="/musicxml"
+        className="text-white hover:text-green-400 transition-colors duration-300 font-semibold"
+      >
+        Tabs
+      </Link>
     </div>
 
     {/* Right-side controls (GitHub + NotationSwitch) */}
