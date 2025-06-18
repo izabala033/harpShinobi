@@ -2,8 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { OpenSheetMusicDisplay } from "opensheetmusicdisplay";
 import { getHarmonicaHoleForNote, harmonicaKeys } from "../utils/utils";
 import { Note, Interval } from "tonal";
+import { useTranslation } from "react-i18next";
 
 const TestFileLoader: React.FC = () => {
+  const { t } = useTranslation();
   const [rawFileContent, setRawFileContent] = useState<string | null>(null);
   const [transpose, setTranspose] = useState<number>(0);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -172,7 +174,7 @@ const TestFileLoader: React.FC = () => {
             >
               {harmonicaKeys.map((key) => (
                 <option key={key.value} value={key.value}>
-                  {key.label}
+                  {t(key.label)}
                 </option>
               ))}
             </select>
