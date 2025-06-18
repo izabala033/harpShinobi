@@ -13,8 +13,16 @@ NoteBender is a real-time pitch detection tool designed for harmonica players. I
 - 🎯 Cents-level pitch accuracy with animated indicators
 - 🎼 Support for **multiple harmonica keys** (C, A, D, etc.)
 - 🔄 Automatically detects and highlights the closest matching note
+  
+- 📄 Load and visualize MusicXML files with harmonica tablature annotations
+- 🔄 Automatic transposition with filters to avoid overblow, overdraw, or bend notes
+- 🎹 Choose harmonica key and customize transposition semitones
+- 📂 Upload your own MusicXML files for viewing and tabbing
+
 - 🌀 Interactive Circle of Fifths visualization for exploring scales, modes, and chords
+
 - 📦 Lightweight, fast loading — built with **Vite**
+
 
 ---
 
