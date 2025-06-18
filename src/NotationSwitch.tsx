@@ -14,7 +14,6 @@ export default function NotationSwitch() {
   return (
     <button
       onClick={toggleLanguage}
-      className="absolute top-4 right-4 z-50 bg-cyan-700 hover:bg-cyan-600 text-white text-xs px-3 py-1 rounded shadow"
       aria-label={`Switch notation to ${buttonLabel}`}
       type="button"
     >

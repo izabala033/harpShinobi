@@ -8,7 +8,6 @@ import Menu from "./Menu";
 import Circle from "./Circle/Circle";
 import Harmonica from "./Harmonica/Harmonica";
 import Settings from "./Settings/Settings";
-import NotationSwitch from "./NotationSwitch";
 
 function App() {
   return (
@@ -16,7 +15,6 @@ function App() {
       <div className="flex flex-col h-screen">
         <div>
           <Menu />
-          <NotationSwitch />
         </div>
         <div className="flex-1 overflow-y-auto">
           <Routes>
